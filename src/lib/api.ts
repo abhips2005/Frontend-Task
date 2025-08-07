@@ -10,6 +10,14 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// Interface for JSONPlaceholder API response
+interface JSONPlaceholderPost {
+  id: number;
+  title: string;
+  body: string;
+  userId: number;
+}
+
 // Fallback data in case API is unavailable
 const fallbackPosts: BlogPost[] = [
   {
@@ -111,7 +119,7 @@ const fallbackPosts: BlogPost[] = [
 ];
 
 // Transform JSONPlaceholder posts to our format
-const transformApiPost = (post: any, index: number): BlogPost => {
+const transformApiPost = (post: JSONPlaceholderPost, index: number): BlogPost => {
   const categories = ['Business', 'Design', 'Technology', 'UX'];
   const authors = [
     { name: 'Jennifer Taylor', avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b5c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
@@ -157,7 +165,7 @@ export const fetchPosts = async (): Promise<BlogPost[]> => {
     
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       console.log('✅ Successfully fetched posts from API');
-      return response.data.map((post: any, index: number) => transformApiPost(post, index));
+      return response.data.map((post: JSONPlaceholderPost, index: number) => transformApiPost(post, index));
     }
     
     console.log('⚠️ API returned empty data, using fallback');
@@ -175,7 +183,7 @@ export const fetchPostById = async (id: string): Promise<BlogPost | null> => {
     
     if (response.data) {
       console.log('✅ Successfully fetched post from API');
-      return transformApiPost(response.data, parseInt(id) - 1);
+      return transformApiPost(response.data as JSONPlaceholderPost, parseInt(id) - 1);
     }
     
     return null;
